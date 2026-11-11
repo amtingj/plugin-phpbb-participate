@@ -23,12 +23,29 @@
 		</dl>
 
 		<dl>
+			<dt><label for="participate_delete_on_cancel_yes">{{ lang('DMZX_ACP_PARTICIPATE_DELETE_ON_CANCEL') ~ lang('COLON') }}</label><br><span>{{ lang('DMZX_ACP_PARTICIPATE_DELETE_ON_CANCEL_EXPLAIN') }}</span></dt>
+			<dd>
+				<label for="participate_delete_on_cancel_yes"><input type="radio" class="radio" id="participate_delete_on_cancel_yes" name="participate_delete_on_cancel" value="1"{% if PARTICIPATE_DELETE_ON_CANCEL %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+				<label for="participate_delete_on_cancel_no"><input type="radio" class="radio" id="participate_delete_on_cancel_no" name="participate_delete_on_cancel" value="0"{% if not PARTICIPATE_DELETE_ON_CANCEL %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+			</dd>
+		</dl>
+
+		<dl>
 			<dt><label for="participate_forum_ids">{{ lang('DMZX_ACP_PARTICIPATE_FORUM_INCLUDED') ~ lang('COLON') }}</label><br><span>{{ lang('DMZX_ACP_PARTICIPATE_FORUM_INCLUDED_EXPLAIN') }}</span></dt>
 			<dd>{{ PARTICIPATE_FORUM_INCLUDED }}</dd>
 		</dl>
 	</fieldset>
 	<fieldset class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+<form id="dmzx_participate_purge" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('DMZX_ACP_PARTICIPATE_PURGE') }}</legend>
+		<p>{{ lang('DMZX_ACP_PARTICIPATE_PURGE_EXPLAIN') }}</p>
+		<input type="submit" id="purge" name="purge" value="{{ lang('DMZX_ACP_PARTICIPATE_PURGE_BUTTON') }}" class="button2" />
 		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>

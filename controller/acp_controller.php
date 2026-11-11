@@ -111,6 +111,7 @@ class acp_controller
 			{
 				// Save the configured options
 				$this->config->set('participate_enable', $this->request->variable('participate_enable', 0));
+				$this->config->set('participate_delete_on_cancel', $this->request->variable('participate_delete_on_cancel', 0));
 
 				$forums = $this->request->variable('selectForms', [0]);
 				$forums = implode(',', array_map('intval', $forums));
@@ -148,6 +149,27 @@ class acp_controller
 			]));
 		}
 
+		if ($this->request->is_set_post('purge'))
+		{
+			if (confirm_box(true))
+			{
+				$this->db->sql_query('DELETE FROM ' . $this->tables . ' WHERE active = 0');
+
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'DMZX_LOG_ACP_PARTICIPATE_PURGE_INACTIVE');
+
+				trigger_error($this->language->lang('DMZX_ACP_PARTICIPATE_PURGE_SUCCESS') . adm_back_link($this->u_action));
+			}
+
+			if (!check_form_key('dmzx_participate_acp'))
+			{
+				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
+			confirm_box(false, $this->language->lang('DMZX_ACP_PARTICIPATE_PURGE_CONFIRM'), build_hidden_fields([
+				'purge'	=> 1,
+			]));
+		}
+
 		$s_errors = !empty($errors);
 
 		// Set output variables for display in the template
@@ -155,6 +177,7 @@ class acp_controller
 			'S_ERROR'						=> $s_errors,
 			'ERROR_MSG'						=> $s_errors ? implode('<br>', $errors) : '',
 			'PARTICIPATE_ENABLE'			=> (bool) $this->config['participate_enable'],
+			'PARTICIPATE_DELETE_ON_CANCEL'	=> (bool) $this->config['participate_delete_on_cancel'],
 			'PARTICIPATE_VERSION'			=> $this->ext_manager->create_extension_metadata_manager('dmzx/participate')->get_metadata('version'),
 			'PARTICIPATE_FORUM_INCLUDED'	=> $this->forum_select($included_forums),
 			'U_ACTION'					 	=> $this->u_action,

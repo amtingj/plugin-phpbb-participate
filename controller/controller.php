@@ -130,6 +130,8 @@ class controller
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		$delete_on_cancel = $this->settings->delete_on_cancel();
+
 		if ($row === false)
 		{
 			$active = 1;
@@ -140,6 +142,14 @@ class controller
 				'post_time'	=> time(),
 			];
 			$this->db->sql_query('INSERT INTO ' . $this->tables . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
+		}
+		else if ($row['active'] && $delete_on_cancel)
+		{
+			// De-register: remove the entry completely
+			$active = 0;
+			$this->db->sql_query('DELETE FROM ' . $this->tables . '
+				WHERE topic_id = ' . (int) $topic_id . '
+					AND user_id = ' . (int) $user_id);
 		}
 		else
 		{
@@ -159,11 +169,30 @@ class controller
 			return new RedirectResponse(append_sid("{$this->root_path}viewtopic.{$this->php_ext}", 't=' . (int) $topic_id, false));
 		}
 
+		if ($active)
+		{
+			$status_class	= 'btn-green';
+			$txt			= $this->language->lang('STATUS_TXT_PARTICIPATE');
+			$button_txt		= $this->language->lang('STATUS_TITLE_PARTICIPATE');
+		}
+		else if ($delete_on_cancel)
+		{
+			$status_class	= 'btn-grey';
+			$txt			= $this->language->lang('STATUS_TXT_NOT_PARTICIPATE');
+			$button_txt		= $this->language->lang('STATUS_TITLE_NOT_PARTICIPATE');
+		}
+		else
+		{
+			$status_class	= 'btn-red';
+			$txt			= $this->language->lang('STATUS_TXT_CANCEL_PARTICIPATE');
+			$button_txt		= $this->language->lang('STATUS_TITLE_CANCEL_PARTICIPATE');
+		}
+
 		return new JsonResponse([
 			'success'						=> true,
-			'DMZX_PARTICIPATE_STATUS_CLASS'	=> $active ? 'btn-green' : 'btn-red',
-			'DMZX_PARTICIPATE_TXT'			=> $active ? $this->language->lang('STATUS_TXT_PARTICIPATE') : $this->language->lang('STATUS_TXT_CANCEL_PARTICIPATE'),
-			'DMZX_PARTICIPATE_BUTTON_TXT'	=> $active ? $this->language->lang('STATUS_TITLE_PARTICIPATE') : $this->language->lang('STATUS_TITLE_CANCEL_PARTICIPATE'),
+			'DMZX_PARTICIPATE_STATUS_CLASS'	=> $status_class,
+			'DMZX_PARTICIPATE_TXT'			=> $txt,
+			'DMZX_PARTICIPATE_BUTTON_TXT'	=> $button_txt,
 			'PARTICIPANTSBAR'				=> $this->participants_bar($topic_id),
 		]);
 	}

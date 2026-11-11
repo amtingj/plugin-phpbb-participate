@@ -40,4 +40,5 @@ $lang = array_merge($lang, [
 	//Log
 	'DMZX_LOG_ACP_PARTICIPATE_SETTINGS'		=> 'Participate settings saved',
 	'DMZX_LOG_ACP_PARTICIPATE_TABLE_RESET'	=> 'Participate table reset',
+	'DMZX_LOG_ACP_PARTICIPATE_PURGE_INACTIVE'	=> 'Participate inactive entries removed',
 ]);

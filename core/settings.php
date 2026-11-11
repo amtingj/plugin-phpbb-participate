@@ -43,6 +43,16 @@ class settings
 	}
 
 	/**
+	 * Whether de-registering removes the row (true) or only flags it inactive (false).
+	 *
+	 * @return bool
+	 */
+	public function delete_on_cancel()
+	{
+		return (bool) $this->config['participate_delete_on_cancel'];
+	}
+
+	/**
 	 * @return int[]
 	 */
 	public function get_forum_ids()
