@@ -3,8 +3,8 @@
     "type": "phpbb-extension",
     "description": "This extension let you be part of an activity (topic)",
     "homepage": "https://www.dmzx-web.net",
-    "version": "1.0.1",
-    "time": "2026-09-07",
+    "version": "1.0.2",
+    "time": "2026-11-11",
     "license": "GPL-2.0-only",
     "authors": [
         {

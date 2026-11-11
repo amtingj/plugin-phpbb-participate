@@ -1,5 +1,11 @@
 ## Participate Changelog
 
+### 1.0.2 - 2026-11-11
+
+- De-registering now removes the participant's row from the database instead of flagging it inactive, so the name is no longer shown struck through. The button returns to the "not registered" state after de-registering.
+- New migration removes existing inactive (struck-through) entries on upgrade.
+- Added German translations (de, de_x_sie).
+
 ### 1.0.1 - 2026-09-07
 
 - Fixed a stored XSS: participant names and colours were output unescaped in the participants bar (page load and AJAX update). Names are now rendered through phpBB's get_username_string().

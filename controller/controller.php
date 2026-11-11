@@ -130,9 +130,21 @@ class controller
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($row === false)
+		if ($row !== false && $row['active'])
 		{
+			// Austragen: Eintrag komplett entfernen
+			$active = 0;
+			$this->db->sql_query('DELETE FROM ' . $this->tables . '
+				WHERE topic_id = ' . (int) $topic_id . '
+					AND user_id = ' . (int) $user_id);
+		}
+		else
+		{
+			// Eintragen (ein evtl. noch vorhandener inaktiver Alt-Eintrag wird ersetzt)
 			$active = 1;
+			$this->db->sql_query('DELETE FROM ' . $this->tables . '
+				WHERE topic_id = ' . (int) $topic_id . '
+					AND user_id = ' . (int) $user_id);
 			$sql_ary = [
 				'user_id'	=> $user_id,
 				'topic_id'	=> (int) $topic_id,
@@ -140,18 +152,6 @@ class controller
 				'post_time'	=> time(),
 			];
 			$this->db->sql_query('INSERT INTO ' . $this->tables . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
-		}
-		else
-		{
-			$active = (int) !$row['active'];
-			$sql_ary = [
-				'active'	=> $active,
-				'post_time'	=> time(),
-			];
-			$this->db->sql_query('UPDATE ' . $this->tables . '
-				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE topic_id = ' . (int) $topic_id . '
-					AND user_id = ' . (int) $user_id);
 		}
 
 		if (!$this->request->is_ajax())
@@ -161,9 +161,9 @@ class controller
 
 		return new JsonResponse([
 			'success'						=> true,
-			'DMZX_PARTICIPATE_STATUS_CLASS'	=> $active ? 'btn-green' : 'btn-red',
-			'DMZX_PARTICIPATE_TXT'			=> $active ? $this->language->lang('STATUS_TXT_PARTICIPATE') : $this->language->lang('STATUS_TXT_CANCEL_PARTICIPATE'),
-			'DMZX_PARTICIPATE_BUTTON_TXT'	=> $active ? $this->language->lang('STATUS_TITLE_PARTICIPATE') : $this->language->lang('STATUS_TITLE_CANCEL_PARTICIPATE'),
+			'DMZX_PARTICIPATE_STATUS_CLASS'	=> $active ? 'btn-green' : 'btn-grey',
+			'DMZX_PARTICIPATE_TXT'			=> $active ? $this->language->lang('STATUS_TXT_PARTICIPATE') : $this->language->lang('STATUS_TXT_NOT_PARTICIPATE'),
+			'DMZX_PARTICIPATE_BUTTON_TXT'	=> $active ? $this->language->lang('STATUS_TITLE_PARTICIPATE') : $this->language->lang('STATUS_TITLE_NOT_PARTICIPATE'),
 			'PARTICIPANTSBAR'				=> $this->participants_bar($topic_id),
 		]);
 	}
